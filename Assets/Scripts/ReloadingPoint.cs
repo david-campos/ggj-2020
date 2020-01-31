@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using DefaultNamespace;
 using UnityEngine;
 
 public class ReloadingPoint : MonoBehaviour
 {
+    public LoadType loadType;
+    
     private void OnTriggerEnter(Collider other) {
         if (other.gameObject.CompareTag("Player")) {
-            other.gameObject.GetComponent<PlayerLoading>().Reload();
+            other.gameObject.GetComponent<PlayerLoading>().Reload(loadType);
         }
     }
 
