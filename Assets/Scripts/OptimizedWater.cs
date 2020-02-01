@@ -22,6 +22,10 @@ public class OptimizedWater : MonoBehaviour
     public float boatForceStrength = 20;
     [Min(0.1f)]
     public float boatPartRadius = 1;
+    [Min(0.1f)]
+    public float totalBoatRadius = 10;
+    [Min(0.01f)]
+    public float boatDensity = 0.1f;
 
     private List<WaterBlob> waterBlobs;
     NativeArray<int> sortedIndexes;
@@ -60,7 +64,7 @@ public class OptimizedWater : MonoBehaviour
         sortjob.Schedule().Complete();
 
         int boatPartCount = boat.transform.childCount;
-        boat.mass = boatPartCount;
+        boat.mass = boatPartCount * boatDensity;
 
         //Reallocate boat arrays if needed
         if (!boatPositions.IsCreated || boatPositions.Length != boatPartCount)
@@ -91,6 +95,11 @@ public class OptimizedWater : MonoBehaviour
             waterForce = waterForce,
             waterDamping = waterDamping,
             boundaryForce = boundaryForce,
+
+            boatRadius = totalBoatRadius,
+            boatPartRadius = boatPartRadius,
+            boatForceStrength = boatForceStrength,
+
             worldPos = transform.position,
             gridSizeX = gridSize.x,
             gridSizeY = gridSize.y,
@@ -101,22 +110,29 @@ public class OptimizedWater : MonoBehaviour
             positions = positions,
             newVelocities = newVelocities,
             newPositions = newPositions,
+
+            boatPositions = boatPositions,
         };
         waterjob.Schedule(sortedIndexes.Length, 256).Complete();
 
         var boatJob = new BoatJob
         {
             dt = Time.fixedDeltaTime,
-            boatRadius = 5,
-            boatCenterOfMass = boat.position,
+            boatRadius = totalBoatRadius,
             boatPartRadius = boatPartRadius,
             boatForceStrength = boatForceStrength,
+            boundaryForce = boundaryForce,
+
+            worldPos = transform.position,
+            gridSizeX = gridSize.x,
+            gridSizeY = gridSize.y,
+            gridSizeZ = gridSize.z,
 
             sortedIndexes = sortedIndexes,
             velocities = velocities,
             positions = positions,
             boatPositions = boatPositions,
-            boatForces = boatForces
+            boatForces = boatForces,
         };
         boatJob.Schedule(boatPartCount, 1).Complete();
 
@@ -126,7 +142,7 @@ public class OptimizedWater : MonoBehaviour
         }
         for(int i = 0; i < boatForces.Length; i++)
         {
-            boat.AddForceAtPosition(boatForces[i], boat.transform.GetChild(i).position);
+            boat.AddForceAtPosition(boatForces[i], boat.transform.GetChild(i).position, ForceMode.Impulse);
         }
 
         
@@ -202,6 +218,10 @@ public class OptimizedWater : MonoBehaviour
         [ReadOnly] public float gridSizeY;
         [ReadOnly] public float gridSizeZ;
 
+        [ReadOnly] public float boatRadius;
+        [ReadOnly] public float boatPartRadius;
+        [ReadOnly] public float boatForceStrength;
+
         [ReadOnly] public NativeArray<int> sortedIndexes;
         [NativeDisableParallelForRestriction]
         [ReadOnly] public NativeArray<float3> velocities;
@@ -211,6 +231,9 @@ public class OptimizedWater : MonoBehaviour
         [WriteOnly] public NativeArray<float3> newVelocities;
         [NativeDisableParallelForRestriction]
         [WriteOnly] public NativeArray<float3> newPositions;
+
+        
+        [ReadOnly] public NativeArray<float3> boatPositions;
 
         public void Execute(int _i)
         {
@@ -286,6 +309,23 @@ public class OptimizedWater : MonoBehaviour
                     totalForce += force;
                 }
 
+                // Water affected by boat parts
+                float3 forceFromBoat = new float3(0, 0, 0);
+                for (int b = 0; b < boatPositions.Length; b++)
+                {
+                    float3 otherPos = boatPositions[b];
+                    float3 deltaPos = otherPos - positions[i];
+                    float distance = math.length(deltaPos);
+                    if (distance <= 0 || distance > boatPartRadius)
+                        continue;
+
+                    float3 direction = -deltaPos / distance;
+                    float forceAmount01 = math.clamp((boatPartRadius - distance) / boatPartRadius, 0, 1);
+                    forceFromBoat += (direction * math.pow(forceAmount01, 0.5f) * boatForceStrength) * dt;
+                }
+
+                totalForce += forceFromBoat;
+
                 float3 damping = velocities[i] * math.length(velocities[i]) * waterDamping * dt;
                 float3 velocity = velocities[i] + totalForce - damping;
                 newPositions[i] = positions[i] + velocity * dt;
@@ -302,7 +342,6 @@ public class OptimizedWater : MonoBehaviour
     private struct BoatJob: IJobParallelFor
     {
         [ReadOnly] public float dt;
-        [ReadOnly] public float3 boatCenterOfMass;
         [ReadOnly] public float boatRadius;
         [ReadOnly] public float boatPartRadius;
         [ReadOnly] public float boatForceStrength;
@@ -312,6 +351,11 @@ public class OptimizedWater : MonoBehaviour
         [ReadOnly] public NativeArray<float3> velocities;
         [NativeDisableParallelForRestriction]
         [ReadOnly] public NativeArray<float3> positions;
+        [ReadOnly] public float boundaryForce;
+        [ReadOnly] public float3 worldPos;
+        [ReadOnly] public float gridSizeX;
+        [ReadOnly] public float gridSizeY;
+        [ReadOnly] public float gridSizeZ;
 
         [ReadOnly] public NativeArray<float3> boatPositions;
         [WriteOnly] public NativeArray<float3> boatForces;
@@ -336,6 +380,50 @@ public class OptimizedWater : MonoBehaviour
 
                 totalForce += force;
             }
+            // Contain above Y bottom
+            //float outsideY = (worldPos.y - gridSizeY / 2) - boatPositions[i].y;
+            //if (outsideY > 0)
+            //{
+            //    if (outsideY > 3)
+            //        outsideY = 3;
+            //    totalForce.y += outsideY * outsideY * boundaryForce;
+                
+            //}
+
+            // Contain inside X range
+            float outsideLeft = (worldPos.x - gridSizeX / 2) - boatPositions[i].x;
+            if (outsideLeft > 0)
+            {
+                if (outsideLeft > 3)
+                    outsideLeft = 3;
+                totalForce.x += outsideLeft * outsideLeft * boundaryForce;
+            }
+            float outsideRight = boatPositions[i].x - (worldPos.x + gridSizeX / 2);
+            if (outsideRight > 0)
+            {
+                if (outsideRight > 3)
+                    outsideRight = 3;
+
+                totalForce.x -= outsideRight * outsideRight * boundaryForce;
+            }
+
+            // Contain inside Z range
+            float outsideBack = (worldPos.z - gridSizeZ / 2) - boatPositions[i].z;
+            if (outsideBack > 0)
+            {
+                if (outsideBack > 3)
+                    outsideBack = 3;
+                totalForce.z += outsideBack * outsideBack * boundaryForce;
+            }
+            float outsideFront = boatPositions[i].z - (worldPos.z + gridSizeZ / 2);
+            if (outsideFront > 0)
+            {
+                if (outsideFront > 3)
+                    outsideFront = 3;
+
+                totalForce.z -= outsideFront * outsideFront * boundaryForce;
+            }
+
             boatForces[i] = totalForce;
         }
     }
