@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 namespace UnityStandardAssets.Characters.ThirdPerson
@@ -40,6 +41,13 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 
 			m_Rigidbody.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
 			m_OrigGroundCheckDistance = m_GroundCheckDistance;
+
+			StartCoroutine(WaitToFall());
+		}
+
+		IEnumerator WaitToFall() {
+			yield return new WaitForSeconds(10f);
+			m_Rigidbody.isKinematic = false;
 		}
 
 
