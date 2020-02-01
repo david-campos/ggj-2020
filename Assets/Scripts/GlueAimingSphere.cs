@@ -36,6 +36,11 @@ public class GlueAimingSphere : MonoBehaviour
         }
     }
 
+    private void OnDisable()
+    {
+        m_CollidingPapers.Clear();
+    }
+
     private void Start() {
         m_MeshRenderer = GetComponent<MeshRenderer>();
         m_OriginalColor = m_MeshRenderer.material.color;

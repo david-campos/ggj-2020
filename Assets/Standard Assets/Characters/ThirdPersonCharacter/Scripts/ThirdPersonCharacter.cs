@@ -168,10 +168,11 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			// check whether conditions are right to allow a jump:
 			if (jump && !crouch && m_Animator.GetCurrentAnimatorStateInfo(0).IsName("Grounded"))
 			{
-				// jump!
-				m_Rigidbody.velocity = new Vector3(m_Rigidbody.velocity.x, m_JumpPower, m_Rigidbody.velocity.z);
+                // jump!
+                //m_Rigidbody.velocity.Scale(new Vector3(1,0,1));
+                m_Rigidbody.AddForce(Vector3.up * m_JumpPower * m_Rigidbody.mass, ForceMode.Impulse);// new Vector3(m_Rigidbody.velocity.x, m_JumpPower, m_Rigidbody.velocity.z);
 				m_IsGrounded = false;
-				m_Animator.applyRootMotion = false;
+                m_Animator.applyRootMotion = false;
 				m_GroundCheckDistance = 0.1f;
 			}
 		}
@@ -194,7 +195,9 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 
 				// we preserve the existing y part of the current velocity.
 				v.y = m_Rigidbody.velocity.y;
-				m_Rigidbody.velocity = v;
+                //m_Rigidbody.velocity = v;
+                Vector3 missingVelocity = v - m_Rigidbody.velocity;
+                m_Rigidbody.AddForce(missingVelocity * 50 * m_Rigidbody.mass);
 			}
 		}
 
@@ -212,7 +215,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			{
 				m_GroundNormal = hitInfo.normal;
 				m_IsGrounded = true;
-				m_Animator.applyRootMotion = true;
+                m_Animator.applyRootMotion = true;
 			}
 			else
 			{
