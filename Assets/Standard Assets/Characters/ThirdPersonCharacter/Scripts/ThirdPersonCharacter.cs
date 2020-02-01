@@ -73,7 +73,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			}
 			else
 			{
-				HandleAirborneMovement();
+				HandleAirborneMovement(move);
 			}
 
 			ScaleCapsuleForCrouching(crouch);
@@ -161,14 +161,18 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 		}
 
 
-		void HandleAirborneMovement()
+		void HandleAirborneMovement(Vector3 move)
 		{
 			// apply extra gravity from multiplier:
 			Vector3 extraGravityForce = (Physics.gravity * m_GravityMultiplier) - Physics.gravity;
 			m_Rigidbody.AddForce(extraGravityForce);
 
 			m_GroundCheckDistance = m_Rigidbody.velocity.y < 0 ? m_OrigGroundCheckDistance : 0.01f;
-		}
+
+            Vector3 missingVelocity = move * m_AnimSpeedMultiplier - m_Rigidbody.velocity;
+            missingVelocity.y = 0;
+            m_Rigidbody.AddForce(missingVelocity * 50 * m_Rigidbody.mass);
+        }
 
 
 		void HandleGroundedMovement(bool crouch, bool jump)
@@ -205,6 +209,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 				v.y = m_Rigidbody.velocity.y;
                 //m_Rigidbody.velocity = v;
                 Vector3 missingVelocity = v - m_Rigidbody.velocity;
+                missingVelocity.y = 0;
                 m_Rigidbody.AddForce(missingVelocity * 50 * m_Rigidbody.mass);
 			}
 		}
