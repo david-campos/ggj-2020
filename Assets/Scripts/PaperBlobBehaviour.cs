@@ -6,15 +6,14 @@ public class PaperBlobBehaviour : MonoBehaviour
 {
     public float minDuration;
     public float maxDuration;
-    public float inmuneProbability;
     public Color[] colorStates;
+    public bool immune;
     public GameObject particlesOnDestroyPrefab;
 
     private int currentColorState = -1;
     private float m_RemainingLife;
     private MeshRenderer m_MeshRenderer;
     private static readonly int Color = Shader.PropertyToID("_Color");
-    private bool inmune;
 
     private bool IsOnWater() {
         return true;
@@ -23,11 +22,10 @@ public class PaperBlobBehaviour : MonoBehaviour
     void Start() {
         m_MeshRenderer = GetComponent<MeshRenderer>();
         m_RemainingLife = Random.Range(minDuration, maxDuration);
-        inmune = Random.value < inmuneProbability;
     }
 
     void Update() {
-        if (!inmune && IsOnWater()) {
+        if (!immune && IsOnWater()) {
             m_RemainingLife -= Time.deltaTime;
         }
 
