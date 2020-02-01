@@ -291,7 +291,7 @@ public class OptimizedWater : MonoBehaviour
                 }
 
                 // Water affecting nearby water
-                for (int _j = math.max(_i - 100, 0); _j < _i + 100 && _j < sortedIndexes.Length; _j++)
+                for (int _j = math.max(_i - 200, 0); _j < _i + 200 && _j < sortedIndexes.Length; _j++)
                 {
                     int j = sortedIndexes[_j];
 
