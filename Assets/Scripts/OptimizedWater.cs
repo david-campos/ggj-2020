@@ -291,7 +291,7 @@ public class OptimizedWater : MonoBehaviour
                 }
 
                 // Water affecting nearby water
-                for (int _j = math.max(_i - 200, 0); _j < _i + 200 && _j < sortedIndexes.Length; _j++)
+                for (int _j = math.max(_i - 300, 0); _j < _i + 300 && _j < sortedIndexes.Length; _j++)
                 {
                     int j = sortedIndexes[_j];
 
@@ -377,6 +377,9 @@ public class OptimizedWater : MonoBehaviour
                 float3 direction = -deltaPos / distance;
                 float forceAmount01 = math.clamp((boatPartRadius - distance) / boatPartRadius, 0, 1);
                 float3 force = (direction * math.pow(forceAmount01, 0.5f) * boatForceStrength) * dt;
+                if (direction.y < 0f) {
+                    force *= 5;
+                }
 
                 totalForce += force;
             }
