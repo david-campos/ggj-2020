@@ -18,11 +18,18 @@ public class OptimizedWater : MonoBehaviour
     public float waterDamping = 0.2f;
     [Min(0)]
     public float boundaryForce = 0.2f;
+    [Min(0)]
+    public float boatForceStrength = 20;
+    [Min(0.1f)]
+    public float boatPartRadius = 1;
 
     private List<WaterBlob> waterBlobs;
-
     NativeArray<int> sortedIndexes;
     NativeArray<float3> velocities, positions, newVelocities, newPositions;
+    NativeArray<float3> boatPositions;
+    NativeArray<float3> boatForces;
+
+    public Rigidbody boat;
 
     private void Start()
     {
@@ -51,6 +58,30 @@ public class OptimizedWater : MonoBehaviour
             sortedIndexes = sortedIndexes
         };
         sortjob.Schedule().Complete();
+
+        int boatPartCount = boat.transform.childCount;
+        boat.mass = boatPartCount;
+
+        //Reallocate boat arrays if needed
+        if (!boatPositions.IsCreated || boatPositions.Length != boatPartCount)
+        {
+            if (boatPositions.IsCreated)
+                boatPositions.Dispose();
+            boatPositions = new NativeArray<float3>(boatPartCount, Allocator.Persistent);
+        }
+        if (!boatForces.IsCreated || boatForces.Length != boatPartCount)
+        {
+            if (boatForces.IsCreated)
+                boatForces.Dispose();
+            boatForces = new NativeArray<float3>(boatPartCount, Allocator.Persistent);
+        }
+        
+        //Init boat positions
+        for(int i = 0; i < boatPositions.Length; i++)
+        {
+            boatPositions[i] = boat.transform.GetChild(i).position;
+        }
+
         var gridSize = (Vector3)GetComponent<WaterGrid>().gridSize * GetComponent<WaterGrid>().gridSpacing;
         var waterjob = new WaterJob
         {
@@ -73,9 +104,29 @@ public class OptimizedWater : MonoBehaviour
         };
         waterjob.Schedule(sortedIndexes.Length, 256).Complete();
 
+        var boatJob = new BoatJob
+        {
+            dt = Time.fixedDeltaTime,
+            boatRadius = 5,
+            boatCenterOfMass = boat.position,
+            boatPartRadius = boatPartRadius,
+            boatForceStrength = boatForceStrength,
+
+            sortedIndexes = sortedIndexes,
+            velocities = velocities,
+            positions = positions,
+            boatPositions = boatPositions,
+            boatForces = boatForces
+        };
+        boatJob.Schedule(boatPartCount, 1).Complete();
+
         for (int i = 0; i < waterBlobs.Count; i++)
         {
             waterBlobs[i].transform.position = newPositions[i];
+        }
+        for(int i = 0; i < boatForces.Length; i++)
+        {
+            boat.AddForceAtPosition(boatForces[i], boat.transform.GetChild(i).position);
         }
 
         
@@ -91,6 +142,12 @@ public class OptimizedWater : MonoBehaviour
 
     private void OnDestroy()
     {
+        if (boatForces.IsCreated)
+            boatForces.Dispose();
+
+        if (boatPositions.IsCreated)
+            boatPositions.Dispose();
+
         sortedIndexes.Dispose();
         velocities.Dispose();
         positions.Dispose();
@@ -158,9 +215,9 @@ public class OptimizedWater : MonoBehaviour
         public void Execute(int _i)
         {
             float3 gravityVector = new float3(0, -gravity * dt, 0);
+            int i = sortedIndexes[_i];
             //for (int _i = 0; _i < sortedIndexes.Length; _i++)
             {
-                int i = sortedIndexes[_i];
                 float3 totalForce = gravityVector;
 
                 // Contain above Y bottom
@@ -210,7 +267,7 @@ public class OptimizedWater : MonoBehaviour
                     totalForce.z -= outsideFront * outsideFront * boundaryForce;
                 }
 
-                // Force against nearby water
+                // Water affecting nearby water
                 for (int _j = math.max(_i - 100, 0); _j < _i + 100 && _j < sortedIndexes.Length; _j++)
                 {
                     int j = sortedIndexes[_j];
@@ -234,6 +291,52 @@ public class OptimizedWater : MonoBehaviour
                 newPositions[i] = positions[i] + velocity * dt;
                 newVelocities[i] = velocity;
             }
+        }
+    }
+
+
+    // Using BurstCompile to compile a Job with burst
+    // Set CompileSynchronously to true to make sure that the method will not be compiled asynchronously
+    // but on the first schedule
+    [BurstCompile(CompileSynchronously = true)]
+    private struct BoatJob: IJobParallelFor
+    {
+        [ReadOnly] public float dt;
+        [ReadOnly] public float3 boatCenterOfMass;
+        [ReadOnly] public float boatRadius;
+        [ReadOnly] public float boatPartRadius;
+        [ReadOnly] public float boatForceStrength;
+
+        [ReadOnly] public NativeArray<int> sortedIndexes;
+        [NativeDisableParallelForRestriction]
+        [ReadOnly] public NativeArray<float3> velocities;
+        [NativeDisableParallelForRestriction]
+        [ReadOnly] public NativeArray<float3> positions;
+
+        [ReadOnly] public NativeArray<float3> boatPositions;
+        [WriteOnly] public NativeArray<float3> boatForces;
+
+        public void Execute(int i)
+        {
+            // Water affecting boat parts
+            float3 totalForce = new float3(0, 0, 0);
+            for (int _j = 0; _j < sortedIndexes.Length; _j++)
+            {
+                int j = sortedIndexes[_j];
+
+                float3 otherPos = positions[j];
+                float3 deltaPos = otherPos - boatPositions[i];
+                float distance = math.length(deltaPos);
+                if (distance <= 0 || distance > boatPartRadius)
+                    continue;
+
+                float3 direction = -deltaPos / distance;
+                float forceAmount01 = math.clamp((boatPartRadius - distance) / boatPartRadius, 0, 1);
+                float3 force = (direction * math.pow(forceAmount01, 0.5f) * boatForceStrength) * dt;
+
+                totalForce += force;
+            }
+            boatForces[i] = totalForce;
         }
     }
 }
