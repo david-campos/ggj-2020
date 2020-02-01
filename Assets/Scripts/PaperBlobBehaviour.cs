@@ -40,22 +40,27 @@ public class PaperBlobBehaviour : MonoBehaviour
             var material = particles.GetComponent<ParticleSystemRenderer>().material;
             material.color = m_MeshRenderer.material.color;
             material.mainTexture = m_MeshRenderer.material.mainTexture;
-            var colliders = Physics.OverlapSphere(transform.position, 0.7f);
+            var colliders = Physics.OverlapSphere(transform.position, 2.0f);
+            var theString = "";
             foreach (var collider in colliders) {
                 var paperBlob = collider.GetComponent<PaperBlobBehaviour>();
-                if (paperBlob && !paperBlob.immune && paperBlob.RemainingLife + 1f > colorStates.Length) {
+                if (paperBlob && !paperBlob.immune && paperBlob.RemainingLife + 1f > colorStates.Length * 10f) {
+                    var distanceSqr = (collider.transform.position - transform.position).sqrMagnitude;
+                    var lifeBefore = paperBlob.RemainingLife;
                     paperBlob.RemainingLife = Mathf.Max(
-                        paperBlob.RemainingLife * 0.5f, // Don't reduce more than 1/2
-                        colorStates.Length * 3f + 3f
+                        paperBlob.RemainingLife - (8f - distanceSqr) * 20f,
+                        colorStates.Length * 10f 
                     );
+                    theString += ("Life from " + lifeBefore + " to " + paperBlob.RemainingLife + "(distanceSqr="+distanceSqr+")\n");
                 }
             }
+            Debug.Log(theString);
 
             Destroy(gameObject);
             gameObject.SetActive(false);
         }
 
-        int desiredState = Mathf.Clamp(Mathf.FloorToInt(m_RemainingLife / 3f), 0, colorStates.Length - 1);
+        int desiredState = Mathf.Clamp(Mathf.FloorToInt(m_RemainingLife / 10f), 0, colorStates.Length - 1);
         if (currentColorState != desiredState) {
             m_MeshRenderer.material.SetColor(Color, colorStates[desiredState]);
             currentColorState = desiredState;

@@ -133,7 +133,7 @@ public class PlayerLoading : MonoBehaviour
                     var behaviour = paper.GetComponent<GluableBehaviour>();
                     if (!behaviour.Glued) {
                         behaviour.Glue();
-                        m_LoadAmount -= 0.5f;
+                        m_LoadAmount -= 0.1f;
                     }
                 }
             }

@@ -978,7 +978,7 @@ MonoBehaviour:
   aimingGhostGlue: {fileID: 583632579}
   aimingAngle: 40
   aimDistance: 10
-  shootingCooldown: 0.5
+  shootingCooldown: 0.1
   shootPrefab: {fileID: 4746557385747343116, guid: 0c8c7eb6cec604f5485980535bef1467,
     type: 3}
 --- !u!1 &1709399709470192506

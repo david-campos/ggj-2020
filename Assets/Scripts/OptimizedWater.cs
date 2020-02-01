@@ -378,7 +378,7 @@ public class OptimizedWater : MonoBehaviour
                 float forceAmount01 = math.clamp((boatPartRadius - distance) / boatPartRadius, 0, 1);
                 float3 force = (direction * math.pow(forceAmount01, 0.5f) * boatForceStrength) * dt;
                 if (direction.y < 0f) {
-                    force *= 5;
+                    force = new Vector3(force.x, force.y * 5f, force.z);
                 }
 
                 totalForce += force;
