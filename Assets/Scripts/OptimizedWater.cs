@@ -170,6 +170,10 @@ public class OptimizedWater : MonoBehaviour
                     if (outsideY > 3)
                         outsideY = 3;
                     totalForce.y += outsideY * outsideY * boundaryForce;
+
+                    //Less bouncing
+                    if (velocities[i].y < 0)
+                        totalForce.y -= velocities[i].y * 0.8f * dt;
                 }
 
                 // Contain inside X range
