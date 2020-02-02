@@ -40,6 +40,7 @@ public class PlayerLoading : MonoBehaviour
     public void Reload(LoadType loadType) {
         m_LoadAmount = maxLoad;
         m_LoadType = loadType;
+        CanReload = false;
     }
 
     public bool CanReload {
