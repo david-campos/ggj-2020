@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityStandardAssets.Characters.ThirdPerson;
 using UnityStandardAssets.Effects;
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(ThirdPersonUserControl))]
 public class PlayerLoading : MonoBehaviour
@@ -44,10 +45,11 @@ public class PlayerLoading : MonoBehaviour
     public bool CanReload {
         set {
             if (!floatingText) return;
-            
+
             if (value) {
                 floatingText.GetComponent<TextMesh>().text = "B to reload";
             }
+
             floatingText.SetActive(value);
         }
     }
@@ -83,6 +85,11 @@ public class PlayerLoading : MonoBehaviour
             if (!m_GlassesRenderer.material.GetColor(Albedo).Equals(notLoadedColor)) {
                 m_GlassesRenderer.material.SetColor(Albedo, notLoadedColor);
             }
+        }
+
+        if (transform.position.y < -10) {
+            var child = Random.Range(0, m_Boat.transform.childCount);
+            transform.position = m_Boat.transform.GetChild(child).position + Vector3.up * 10f;
         }
     }
 
