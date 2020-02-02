@@ -9,7 +9,7 @@ public class KeepMeFloating : MonoBehaviour
     void Update() {
         // -15 looks like a fair position to say you have sunk,
         // but we wait some frames before showing the game over screen
-        if (transform.position.y < -15) {
+        if (transform.position.y < -15 && TimeCounter.GetInstance().IsCounting) {
             TimeCounter.GetInstance().StopCounting();
             StartCoroutine(ShowGameOver());
         }
