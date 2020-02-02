@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: WaterBlob
-  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_Shader: {fileID: 4800000, guid: 05d89c4112352ff4c96cc1ce175bb96e, type: 3}
   m_ShaderKeywords: _EMISSION
   m_LightmapFlags: 0
   m_EnableInstancingVariants: 1
@@ -64,6 +64,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
+    - _Bottom: -2.62
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
@@ -78,8 +79,10 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
+    - _Top: 3.75
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0.10720008, g: 0.6341655, b: 0.6886792, a: 1}
+    - _Color: {r: 0.21929511, g: 0.6037736, b: 0.56806725, a: 1}
+    - _ColorTop: {r: 0.3443396, g: 0.94352037, b: 1, a: 1}
     - _EmissionColor: {r: 0.03951584, g: 0.0754717, b: 0.06388505, a: 1}
