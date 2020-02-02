@@ -43,6 +43,8 @@ public class PlayerLoading : MonoBehaviour
 
     public bool CanReload {
         set {
+            if (!floatingText) return;
+            
             if (value) {
                 floatingText.GetComponent<TextMesh>().text = "B to reload";
             }
