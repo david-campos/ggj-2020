@@ -58,6 +58,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			// turn amount and forward amount required to head in the desired
 			// direction.
 			if (move.magnitude > 1f) move.Normalize();
+            Vector3 worldMove = move;
 			move = transform.InverseTransformDirection(move);
 			CheckGroundStatus();
 			move = Vector3.ProjectOnPlane(move, m_GroundNormal);
@@ -73,7 +74,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			}
 			else
 			{
-				HandleAirborneMovement(move);
+				HandleAirborneMovement(worldMove);
 			}
 
 			ScaleCapsuleForCrouching(crouch);
@@ -169,9 +170,9 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 
 			m_GroundCheckDistance = m_Rigidbody.velocity.y < 0 ? m_OrigGroundCheckDistance : 0.01f;
 
-            Vector3 missingVelocity = move * m_AnimSpeedMultiplier - m_Rigidbody.velocity;
+            Vector3 missingVelocity = move * 5 - m_Rigidbody.velocity;
             missingVelocity.y = 0;
-            m_Rigidbody.AddForce(missingVelocity * 50 * m_Rigidbody.mass);
+            m_Rigidbody.AddForce(missingVelocity * 20 * m_Rigidbody.mass);
         }
 
 
