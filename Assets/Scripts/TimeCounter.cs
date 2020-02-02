@@ -6,7 +6,7 @@ public class TimeCounter
     private static TimeCounter _sInstance = null;
     
     private float m_Start = -1f;
-    private float m_End;
+    private float m_End = -1f;
 
     private TimeCounter() {}
 
