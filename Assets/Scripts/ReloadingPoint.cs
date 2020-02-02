@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using DefaultNamespace;
 using UnityEngine;
 
@@ -9,24 +10,40 @@ public class ReloadingPoint : MonoBehaviour
     public float activationDuration;
 
     private ParticleSystem m_ParticleSystem;
-    private float m_LastEnterTime;
+    private float m_LastReloadTime;
+    private HashSet<PlayerLoading> m_PlayersInside;
 
     private void Start() {
+        m_PlayersInside = new HashSet<PlayerLoading>();
         m_ParticleSystem = GetComponent<ParticleSystem>();
-        m_LastEnterTime = Time.time - activationDuration;
+        m_LastReloadTime = Time.time - activationDuration;
     }
 
     private void Update() {
-        var activatedFor = Time.time - m_LastEnterTime;
+        foreach (var player in m_PlayersInside) {
+            if (Input.GetButton("Reload" + player.Player)) {
+                player.Reload(loadType);
+                m_LastReloadTime = Time.time;
+            }
+        }
+
+        var activatedFor = Time.time - m_LastReloadTime;
         var activationFraction = Mathf.Clamp01((activationDuration - activatedFor) / activationDuration);
         var particleSystemEmission = m_ParticleSystem.emission;
         particleSystemEmission.rateOverTimeMultiplier = 20 + activationFraction * 500;
     }
 
+    private void OnDestroy() {
+        m_PlayersInside.Clear();
+    }
+
     private void OnTriggerEnter(Collider other) {
         if (other.gameObject.CompareTag("Player")) {
-            m_LastEnterTime = Time.time;
-            other.gameObject.GetComponent<PlayerLoading>().Reload(loadType);
+            m_PlayersInside.Add(other.GetComponent<PlayerLoading>());
         }
+    }
+
+    private void OnTriggerExit(Collider other) {
+        m_PlayersInside.Remove(other.GetComponent<PlayerLoading>());
     }
 }

@@ -31,6 +31,9 @@ public class PlayerLoading : MonoBehaviour
     private string m_FireButton;
     private GlueAimingSphere m_GlueAimingSphere;
     private GameObject m_Boat;
+    private string m_Player;
+
+    public string Player => m_Player;
 
     public void Reload(LoadType loadType) {
         m_LoadAmount = maxLoad;
@@ -41,7 +44,8 @@ public class PlayerLoading : MonoBehaviour
         m_GlassesRenderer = transform.GetChild(1).GetComponent<SkinnedMeshRenderer>();
         m_AimingPaperRenderer = aimingGhostPaper.GetComponent<MeshRenderer>();
         aimingOrigin.rotation = Quaternion.Euler(aimingAngle, 0, 0);
-        m_FireButton = "Fire" + GetComponent<ThirdPersonUserControl>().player;
+        m_Player = GetComponent<ThirdPersonUserControl>().player;
+        m_FireButton = "Fire" + m_Player;
         m_GlueAimingSphere = aimingGhostGlue.GetComponent<GlueAimingSphere>();
         m_Boat = GameObject.Find("Boat");
         if (!m_Boat) {
