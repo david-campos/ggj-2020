@@ -864,7 +864,7 @@ Transform:
   m_GameObject: {fileID: 1709399709470190494}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.33708102, y: -0.00000044276385, z: -3.7141728}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_LocalScale: {x: 1.8, y: 1.8, z: 1.8}
   m_Children:
   - {fileID: 1709399709470492982}
   - {fileID: 1709399709470536612}
@@ -949,13 +949,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce7a80d520cacc042b5fe14f373d8173, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_MovingTurnSpeed: 360
-  m_StationaryTurnSpeed: 250
-  m_JumpPower: 8
-  m_GravityMultiplier: 4
+  m_MovingTurnSpeed: 720
+  m_StationaryTurnSpeed: 480
+  m_JumpPower: 12
+  m_GravityMultiplier: 3
   m_RunCycleLegOffset: 0.2
-  m_MoveSpeedMultiplier: 0.6
-  m_AnimSpeedMultiplier: 1.5
+  m_MoveSpeedMultiplier: 1
+  m_AnimSpeedMultiplier: 1
   m_GroundCheckDistance: 0.5
 --- !u!114 &1709399709506751195
 MonoBehaviour:
