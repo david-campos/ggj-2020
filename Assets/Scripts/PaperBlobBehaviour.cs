@@ -41,7 +41,6 @@ public class PaperBlobBehaviour : MonoBehaviour
             material.color = m_MeshRenderer.material.color;
             material.mainTexture = m_MeshRenderer.material.mainTexture;
             var colliders = Physics.OverlapSphere(transform.position, 2.0f);
-            var theString = "";
             foreach (var collider in colliders) {
                 var paperBlob = collider.GetComponent<PaperBlobBehaviour>();
                 if (paperBlob && !paperBlob.immune && paperBlob.RemainingLife + 1f > colorStates.Length * 10f) {
@@ -51,10 +50,8 @@ public class PaperBlobBehaviour : MonoBehaviour
                         paperBlob.RemainingLife - (8f - distanceSqr) * 20f,
                         colorStates.Length * 10f 
                     );
-                    theString += ("Life from " + lifeBefore + " to " + paperBlob.RemainingLife + "(distanceSqr="+distanceSqr+")\n");
                 }
             }
-            Debug.Log(theString);
 
             Destroy(gameObject);
             gameObject.SetActive(false);
