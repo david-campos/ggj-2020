@@ -46,7 +46,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 		}
 
 		IEnumerator WaitToFall() {
-			yield return new WaitForSeconds(10f);
+			yield return new WaitForSeconds(7f);
 			m_Rigidbody.isKinematic = false;
 		}
 
