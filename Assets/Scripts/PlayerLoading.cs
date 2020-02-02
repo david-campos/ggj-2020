@@ -21,6 +21,7 @@ public class PlayerLoading : MonoBehaviour
     public float aimDistance;
     public float shootingCooldown;
     public GameObject shootPrefab;
+    public GameObject floatingText;
 
     private float m_LoadAmount = 0;
     private SkinnedMeshRenderer m_GlassesRenderer;
@@ -38,6 +39,15 @@ public class PlayerLoading : MonoBehaviour
     public void Reload(LoadType loadType) {
         m_LoadAmount = maxLoad;
         m_LoadType = loadType;
+    }
+
+    public bool CanReload {
+        set {
+            if (value) {
+                floatingText.GetComponent<TextMesh>().text = "B to reload";
+            }
+            floatingText.SetActive(value);
+        }
     }
 
     void Start() {
