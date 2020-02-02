@@ -18,8 +18,11 @@ public class TimeCounter
         ? (m_End > 0 ? m_End - m_Start : Time.time - m_Start)
         : 0f;
 
+    public bool IsCounting => m_Start > 0 && m_End < 0;
+    
     public void StartCounting() {
         m_Start = Time.time;
+        m_End = -1f;
     }
 
     public void StopCounting() {

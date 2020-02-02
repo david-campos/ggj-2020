@@ -83,7 +83,7 @@ public class PlayerLoading : MonoBehaviour
             }
         }
 
-        if (transform.position.y < -10) {
+        if (transform.position.y < -10 && TimeCounter.GetInstance().IsCounting) {
             var child = Random.Range(0, m_Boat.transform.childCount);
             transform.position = m_Boat.transform.GetChild(child).position + Vector3.up * 10f;
         }
