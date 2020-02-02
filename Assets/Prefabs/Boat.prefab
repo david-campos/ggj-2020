@@ -7418,6 +7418,11 @@ PrefabInstance:
       propertyPath: minDuration
       value: 500
       objectReference: {fileID: 0}
+    - target: {fileID: 4746557385747343115, guid: 0c8c7eb6cec604f5485980535bef1467,
+        type: 3}
+      propertyPath: initialLoadTime
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 4746557385747343116, guid: 0c8c7eb6cec604f5485980535bef1467,
         type: 3}
       propertyPath: m_Name
