@@ -164,11 +164,20 @@ public class OptimizedWater : MonoBehaviour
         if (boatPositions.IsCreated)
             boatPositions.Dispose();
 
-        sortedIndexes.Dispose();
-        velocities.Dispose();
-        positions.Dispose();
-        newVelocities.Dispose();
-        newPositions.Dispose();
+        if (sortedIndexes.IsCreated)
+            sortedIndexes.Dispose();
+
+        if (velocities.IsCreated)
+            velocities.Dispose();
+
+        if (positions.IsCreated)
+            positions.Dispose();
+
+        if (newVelocities.IsCreated)
+            newVelocities.Dispose();
+
+        if (newPositions.IsCreated)
+            newPositions.Dispose();
     }
 
     [BurstCompile(CompileSynchronously = true)]
