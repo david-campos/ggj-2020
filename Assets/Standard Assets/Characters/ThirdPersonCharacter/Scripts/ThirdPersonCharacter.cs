@@ -9,10 +9,10 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 	public class ThirdPersonCharacter : MonoBehaviour
 	{
 		[SerializeField] float m_MovingTurnSpeed = 360;
-		[SerializeField] float m_StationaryTurnSpeed = 180;
+		[SerializeField] float m_StationaryTurnSpeed = 360;
 		[SerializeField] float m_JumpPower = 12f;
-		[Range(1f, 4f)][SerializeField] float m_GravityMultiplier = 2f;
-		[SerializeField] float m_RunCycleLegOffset = 0.2f; //specific to the character in sample assets, will need to be modified to work with others
+        [Range(1f, 4)] [SerializeField] float m_GravityMultiplier = 2f;
+        [SerializeField] float m_RunCycleLegOffset = 0.2f; //specific to the character in sample assets, will need to be modified to work with others
 		[SerializeField] float m_MoveSpeedMultiplier = 1f;
 		[SerializeField] float m_AnimSpeedMultiplier = 1f;
 		[SerializeField] float m_GroundCheckDistance = 0.1f;
@@ -52,12 +52,11 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 
 
 		public void Move(Vector3 move, bool crouch, bool jump)
-		{
-
-			// convert the world relative moveInput vector into a local-relative
-			// turn amount and forward amount required to head in the desired
-			// direction.
-			if (move.magnitude > 1f) move.Normalize();
+        {
+            // convert the world relative moveInput vector into a local-relative
+            // turn amount and forward amount required to head in the desired
+            // direction.
+            if (move.magnitude > 1f) move.Normalize();
             Vector3 worldMove = move;
 			move = transform.InverseTransformDirection(move);
 			CheckGroundStatus();
@@ -164,22 +163,18 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 
 		void HandleAirborneMovement(Vector3 move)
 		{
-			// apply extra gravity from multiplier:
-			Vector3 extraGravityForce = (Physics.gravity * m_GravityMultiplier) - Physics.gravity;
-			m_Rigidbody.AddForce(extraGravityForce);
-
 			m_GroundCheckDistance = m_Rigidbody.velocity.y < 0 ? m_OrigGroundCheckDistance : 0.01f;
 
             Vector3 missingVelocity = move * 5 - m_Rigidbody.velocity;
             missingVelocity.y = 0;
-            m_Rigidbody.AddForce(missingVelocity * 20 * m_Rigidbody.mass);
+            m_Rigidbody.AddForce(missingVelocity * 40 * m_Rigidbody.mass);
         }
 
 
 		void HandleGroundedMovement(bool crouch, bool jump)
-		{
-			// check whether conditions are right to allow a jump:
-			if (jump && !crouch && m_Animator.GetCurrentAnimatorStateInfo(0).IsName("Grounded"))
+        {
+            // check whether conditions are right to allow a jump:
+            if (jump && !crouch && m_Animator.GetCurrentAnimatorStateInfo(0).IsName("Grounded"))
 			{
                 // jump!
                 //m_Rigidbody.velocity.Scale(new Vector3(1,0,1));
@@ -197,8 +192,13 @@ namespace UnityStandardAssets.Characters.ThirdPerson
 			transform.Rotate(0, m_TurnAmount * turnSpeed * Time.deltaTime, 0);
 		}
 
+        private void FixedUpdate()
+        {
+            Vector3 extraGravityForce = (Physics.gravity * m_GravityMultiplier) - Physics.gravity;
+            m_Rigidbody.AddForce(extraGravityForce * m_Rigidbody.mass);
+        }
 
-		public void OnAnimatorMove()
+        public void OnAnimatorMove()
 		{
 			// we implement this function to override the default root motion.
 			// this allows us to modify the positional speed before it's applied.
@@ -211,7 +211,7 @@ namespace UnityStandardAssets.Characters.ThirdPerson
                 //m_Rigidbody.velocity = v;
                 Vector3 missingVelocity = v - m_Rigidbody.velocity;
                 missingVelocity.y = 0;
-                m_Rigidbody.AddForce(missingVelocity * 50 * m_Rigidbody.mass);
+                m_Rigidbody.AddForce(missingVelocity * 40 * m_Rigidbody.mass);
 			}
 		}
 
