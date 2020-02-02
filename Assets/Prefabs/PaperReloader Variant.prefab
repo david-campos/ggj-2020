@@ -82,10 +82,15 @@ PrefabInstance:
       propertyPath: InitialModule.startColor.maxColor.b
       value: 0.8396226
       objectReference: {fileID: 0}
+    - target: {fileID: 5045541515698601779, guid: 5dc1ba76d679d72f0b426fe772aafd2c,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: cbd064cf2b28d3c45b1242a5d939715c, type: 2}
     - target: {fileID: 5045541515698601789, guid: 5dc1ba76d679d72f0b426fe772aafd2c,
         type: 3}
       propertyPath: m_Name
-      value: PaperReloader
+      value: PaperReloader Variant
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5dc1ba76d679d72f0b426fe772aafd2c, type: 3}
