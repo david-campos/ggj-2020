@@ -4,6 +4,7 @@ using UnityEngine.UIElements;
 [RequireComponent(typeof(MeshRenderer))]
 public class PaperBlobBehaviour : MonoBehaviour
 {
+    public float initialLoadTime = 5.0f;
     public float minDuration;
     public float maxDuration;
     public Color[] colorStates;
@@ -30,7 +31,7 @@ public class PaperBlobBehaviour : MonoBehaviour
     }
 
     void Update() {
-        if (!immune && IsOnWater()) {
+        if (!immune && IsOnWater() && Time.timeSinceLevelLoad >= initialLoadTime) {
             m_RemainingLife -= Time.deltaTime;
         }
 

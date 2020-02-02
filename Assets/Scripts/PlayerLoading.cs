@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityStandardAssets.Characters.ThirdPerson;
 using UnityStandardAssets.Effects;
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(ThirdPersonUserControl))]
 public class PlayerLoading : MonoBehaviour
@@ -21,6 +22,7 @@ public class PlayerLoading : MonoBehaviour
     public float aimDistance;
     public float shootingCooldown;
     public GameObject shootPrefab;
+    public GameObject floatingText;
 
     private float m_LoadAmount = 0;
     private SkinnedMeshRenderer m_GlassesRenderer;
@@ -38,6 +40,14 @@ public class PlayerLoading : MonoBehaviour
     public void Reload(LoadType loadType) {
         m_LoadAmount = maxLoad;
         m_LoadType = loadType;
+        CanReload = false;
+    }
+
+    public bool CanReload {
+        set {
+            if (!floatingText) return;
+            floatingText.SetActive(value);
+        }
     }
 
     void Start() {
@@ -71,6 +81,11 @@ public class PlayerLoading : MonoBehaviour
             if (!m_GlassesRenderer.material.GetColor(Albedo).Equals(notLoadedColor)) {
                 m_GlassesRenderer.material.SetColor(Albedo, notLoadedColor);
             }
+        }
+
+        if (transform.position.y < -10 && TimeCounter.GetInstance().IsCounting) {
+            var child = Random.Range(0, m_Boat.transform.childCount);
+            transform.position = m_Boat.transform.GetChild(child).position + Vector3.up * 10f;
         }
     }
 

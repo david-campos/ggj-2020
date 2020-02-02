@@ -34,16 +34,27 @@ public class ReloadingPoint : MonoBehaviour
     }
 
     private void OnDestroy() {
+        foreach (var playerLoading in m_PlayersInside) {
+            playerLoading.CanReload = false;
+        }
         m_PlayersInside.Clear();
     }
 
     private void OnTriggerEnter(Collider other) {
         if (other.gameObject.CompareTag("Player")) {
-            m_PlayersInside.Add(other.GetComponent<PlayerLoading>());
+            var player = other.GetComponent<PlayerLoading>();
+            if (player) {
+                m_PlayersInside.Add(player);
+                player.CanReload = true;
+            }
         }
     }
 
     private void OnTriggerExit(Collider other) {
-        m_PlayersInside.Remove(other.GetComponent<PlayerLoading>());
+        var player = other.GetComponent<PlayerLoading>();
+        if (player) {
+            m_PlayersInside.Remove(player);
+            player.CanReload = false;
+        }
     }
 }
