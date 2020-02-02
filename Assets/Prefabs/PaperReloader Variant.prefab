@@ -85,7 +85,12 @@ PrefabInstance:
     - target: {fileID: 5045541515698601789, guid: 5dc1ba76d679d72f0b426fe772aafd2c,
         type: 3}
       propertyPath: m_Name
-      value: PaperReloader
+      value: PaperReloader Variant
+      objectReference: {fileID: 0}
+    - target: {fileID: 5312212052918103048, guid: 5dc1ba76d679d72f0b426fe772aafd2c,
+        type: 3}
+      propertyPath: m_text
+      value: Paper
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5dc1ba76d679d72f0b426fe772aafd2c, type: 3}

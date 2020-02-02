@@ -112,7 +112,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Reload Glue
+  m_text: Glue
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -216,6 +216,7 @@ GameObject:
   - component: {fileID: 8339982756118627269}
   - component: {fileID: 2866782308456500082}
   - component: {fileID: 5544487362279740305}
+  - component: {fileID: 3105660582917822344}
   m_Layer: 2
   m_Name: Reload Button
   m_TagString: Untagged
@@ -231,7 +232,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1927441839402078012}
   m_LocalRotation: {x: 0.22882323, y: 0.70123315, z: 0.6419014, w: 0.2094624}
-  m_LocalPosition: {x: -0.00015640259, y: 0.000049591064, z: 1.9800001}
+  m_LocalPosition: {x: -0.04, y: -0.06, z: 1.19}
   m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_Children:
   - {fileID: 7953522670189160223}
@@ -297,6 +298,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74785aa910178fb4f9ca54de33b11d6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &3105660582917822344
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1927441839402078012}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2ec2b96de5640e42a622fc3064f1c80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Target: {fileID: 0}
+  m_AutoTargetPlayer: 0
+  m_AutoTargetCamera: 1
+  m_UpdateType: 0
+  m_RotationRange: {x: 1000, y: 1000}
+  m_FollowSpeed: 0
+  invertedLook: 1
 --- !u!1 &5045541515698601789
 GameObject:
   m_ObjectHideFlags: 0
