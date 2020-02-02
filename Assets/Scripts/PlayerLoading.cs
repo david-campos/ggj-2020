@@ -40,16 +40,12 @@ public class PlayerLoading : MonoBehaviour
     public void Reload(LoadType loadType) {
         m_LoadAmount = maxLoad;
         m_LoadType = loadType;
+        CanReload = false;
     }
 
     public bool CanReload {
         set {
             if (!floatingText) return;
-
-            if (value) {
-                floatingText.GetComponent<TextMesh>().text = "B to reload";
-            }
-
             floatingText.SetActive(value);
         }
     }
